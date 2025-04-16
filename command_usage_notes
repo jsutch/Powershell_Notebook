@@ -1,0 +1,145 @@
+Set-Alias -Name grep -Value findstr
+
+
+gci is an alias for get-childitem
+Find a file:
+gci -recurse -path c:\jenkins\$proj| where-object {$_.name -CContains "pkg"} | Select-Object -ExpandProperty FullName
+
+
+Cat a file:
+cat Filename or get-content Filename
+---
+ps is an alias for get-process
+
+Get a Process Id by name
+ps | Where-Object {$_.Name -ccontains "xagt"} | Select-Object -Property Id
+
+Get Memory use of a process:
+ps | Where-Object {$_.Name -ccontains "xagt"} | Select-Object -Property PagedMemorySize
+
+See  all the properties of all processes named xagt:
+ps | Where-Object {$_.Name -ccontains "xagt"} | Select-Object -Property *
+
+
+---
+Find files, do stuff:
+(Find-Module *azurerm*).foreach({Install-Module -Name $PSItem.Name})
+
+----
+
+Pipe grep a string from a command:
+
+Get-Command |findstr *SQL*
+
+    PS C:\Users\alice> Set-Alias -Name grep -Value findstr
+
+    PS C:\Users\alice> ps | grep svc
+
+        293      17     4380      19568               124   4 svchost
+
+        295      18     4348      19552               176  10 svchost
+
+       1765      52   346336     326400               484   0 svchost
+
+----
+
+• -lt -- Less than
+
+• -le -- Less than or equal to
+
+• -gt -- Greater than
+
+• -ge -- Greater than or equal to
+
+• -eq -- Equal to
+
+• -ne -- Not equal to
+
+• -like - Like; uses wildcards for pattern matching
+
+get-service | where {$_ -match 'sql'} would be get-service | where {$_ -eq "sql"}
+
+get-service | where {$_ -like 'sql'} would be get-service | where {$_ -like "sql"}
+
+PS C:\> Get-Service | where {$_.name -like "net*"}
+
+
+----
+Some notes on writing practical loops in powershell:
+
+sleep:
+start-sleep -s 10
+
+date:
+get-date
+
+----
+A quick loop to iterate to 5:
+$i = 1
+while ($i -le 5) {Write-Host $i; $i++}
+
+----
+
+A loop that will print a timestamp once a second to a log file in append mode.
+while ($true) {get-date | out-file c:\time.log.txt -append;start-sleep -s 1}
+
+=========
+To reboot from the powershell command line:
+
+C:\restart-computor
+
+
+or:
+
+C:\ shutdown /r
+
+
+===============
+To Turn Off:
+
+NetSh Advfirewall set allprofiles state off.
+
+To Turn On:
+NetSh Advfirewall set allrprofiles state on.
+
+To check the status of Windows Firewall:
+Netsh Advfirewall show allprofiles.
+
+To reset:
+
+ netsh advfirewall reset
+
+Allow Ping In:
+netsh advfirewall firewall add rule name="All ICMP V4" dir=in action=allow protocol=icmpv
+
+Allowing and deleting an open port
+
+netsh advfirewall firewall add rule name="Open SQL Server Port 1433" dir=in action=allow protocol=TCP localport=1433
+
+netsh advfirewall firewall delete rule name="Open SQL Server Port 1433" protocol=tcp localport=1433
+
+Allowing Messenger:
+netsh advfirewall firewall add rule name="Allow Messenger" dir=in action=allow program="C:\programfiles\messenger\msnmsgr.exe"
+
+
+Exporting and Importing configs:
+netsh advfirewall export "C:\temp\WFconfiguration.wfw"
+netsh advfirewall import "C:\temp\WFconfiguration.wfw"
+
+Setting a group for remote firewall
+netsh advfirewall firewall set rule group="remote desktop" new enable=Yes
+
+---
+
+netsh advfirewall set allprofiles state on
+netsh advfirewall set allprofiles state off
+
+===============
+
+get-aduser -filter {Enabled -eq "True"} -properties SamAccountName,Enabled | select SamAccountName | export-csv accounts_e.csv
+Don't forget to Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted
+
+
+==================
+
+
